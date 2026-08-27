@@ -1,0 +1,15 @@
+{
+  "title": "Phàm Nhân Tu Tiên",
+  "parts": [
+    {
+      "id": "part1",
+      "name": "Phần 1 - Phàm Nhân Tu Tiên",
+      "chapters": 2448
+    },
+    {
+      "id": "part2",
+      "name": "Phần 2 - Tiên Giới Thiên",
+      "chapters": 1394
+    }
+  ]
+}

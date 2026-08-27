@@ -1,0 +1,8 @@
+{
+  "name": "Phàm Nhân Tu Tiên Offline Reader",
+  "short_name": "PNTT Reader",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0d0f12",
+  "theme_color": "#111318"
+}
