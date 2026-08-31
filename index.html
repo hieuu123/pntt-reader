@@ -5,41 +5,70 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#111318">
   <meta name="apple-mobile-web-app-capable" content="yes">
+
   <title>Phàm Nhân Tu Tiên - Offline Reader</title>
+
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="stylesheet" href="./style.css">
 </head>
+
 <body>
+
 <header class="topbar">
   <div class="topbar-inner">
+
     <div class="brand">
       <strong>Phàm Nhân Tu Tiên</strong>
       <small id="statusText">Đang tải…</small>
     </div>
-    <button id="fontDown">A−</button>
-    <button id="fontUp">A+</button>
+
+    <button id="themeBtn" type="button">☀ Light</button>
+    <button id="fontDown" type="button">A−</button>
+    <button id="fontUp" type="button">A+</button>
+
   </div>
 </header>
 
 <main class="page">
+
   <section class="controls card">
+
     <div class="row">
-      <label>Phần<select id="partSelect"></select></label>
-      <label>Chương
+
+      <label>
+        Phần
+        <select id="partSelect"></select>
+      </label>
+
+      <label>
+        Chương
         <div class="chapter-input-row">
           <input id="chapterInput" type="number" min="1" inputmode="numeric">
-          <button id="goBtn">Đi</button>
+          <button id="goBtn" type="button">Đi</button>
         </div>
       </label>
+
     </div>
+
+    <label class="toc">
+      Danh sách chương
+      <select id="chapterSelect">
+        <option>Đang tải mục lục...</option>
+      </select>
+    </label>
+
     <div class="nav-row">
-      <button id="prevBtn">← Chương trước</button>
-      <button id="nextBtn">Chương tiếp →</button>
+      <button id="prevBtn" type="button">← Chương trước</button>
+      <button id="nextBtn" type="button">Chương tiếp →</button>
     </div>
+
     <div class="offline-row">
-      <button id="offlineBtn" class="secondary">Tải phần này để đọc offline</button>
+      <button id="offlineBtn" class="secondary" type="button">
+        Tải phần này để đọc offline
+      </button>
       <span id="offlineStatus"></span>
     </div>
+
   </section>
 
   <article class="reader card">
@@ -48,12 +77,14 @@
   </article>
 
   <section class="bottom-nav">
-    <button id="prevBtnBottom">← Trước</button>
-    <button id="topBtn" class="secondary">↑ Đầu chương</button>
-    <button id="nextBtnBottom">Tiếp →</button>
+    <button id="prevBtnBottom" type="button">← Trước</button>
+    <button id="topBtn" class="secondary" type="button">↑ Đầu chương</button>
+    <button id="nextBtnBottom" type="button">Tiếp →</button>
   </section>
+
 </main>
 
 <script src="./app.js"></script>
+
 </body>
 </html>
