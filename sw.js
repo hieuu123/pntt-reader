@@ -1,9 +1,240 @@
-const SHELL="pntt-shell-v1",CH="pntt-reader-chapters-v1";
-self.addEventListener("install",e=>{e.waitUntil(caches.open(SHELL).then(c=>c.addAll(["./","./index.html","./style.css","./app.js","./manifest.webmanifest","./data/index.json"])));self.skipWaiting()});
-self.addEventListener("activate",e=>e.waitUntil(self.clients.claim()));
-self.addEventListener("fetch",e=>{
- if(e.request.method!=="GET")return;
- const u=new URL(e.request.url),isCh=/\/data\/part[12]\/\d{4}\.json$/.test(u.pathname);
- if(isCh){e.respondWith(caches.open(CH).then(async c=>{const hit=await c.match(e.request);if(hit)return hit;const r=await fetch(e.request);if(r.ok)c.put(e.request,r.clone());return r}));return}
- e.respondWith(caches.match(e.request).then(x=>x||fetch(e.request)));
-});
+const SHELL_CACHE =
+  "pntt-reader-shell-v2";
+
+
+const CHAPTER_CACHE =
+  "pntt-reader-chapters-v2";
+
+
+const SHELL_FILES = [
+
+  "./",
+
+  "./index.html",
+
+  "./style.css",
+
+  "./app.js",
+
+  "./manifest.webmanifest",
+
+  "./data/index.json",
+
+  "./data/toc-part1.json",
+
+  "./data/toc-part2.json",
+
+];
+
+
+// ============================================================
+// INSTALL
+// ============================================================
+
+self.addEventListener(
+  "install",
+  event => {
+
+    event.waitUntil(
+
+      caches
+        .open(
+          SHELL_CACHE
+        )
+
+        .then(
+          cache =>
+            cache.addAll(
+              SHELL_FILES
+            )
+        )
+
+    );
+
+
+    self.skipWaiting();
+
+  }
+);
+
+
+// ============================================================
+// ACTIVATE
+// ============================================================
+
+self.addEventListener(
+  "activate",
+  event => {
+
+    event.waitUntil(
+
+      Promise.all([
+
+        self.clients.claim(),
+
+        caches
+          .keys()
+
+          .then(
+            keys => {
+
+              return Promise.all(
+
+                keys.map(
+                  key => {
+
+                    if (
+                      key.startsWith(
+                        "pntt-reader-shell-"
+                      )
+                      &&
+                      key
+                      !== SHELL_CACHE
+                    ) {
+
+                      return caches.delete(
+                        key
+                      );
+
+                    }
+
+                  }
+                )
+
+              );
+
+            }
+          )
+
+      ])
+
+    );
+
+  }
+);
+
+
+// ============================================================
+// FETCH
+// ============================================================
+
+self.addEventListener(
+  "fetch",
+  event => {
+
+    if (
+      event.request.method
+      !== "GET"
+    ) {
+
+      return;
+
+    }
+
+
+    const url =
+      new URL(
+        event.request.url
+      );
+
+
+    // --------------------------------------------------------
+    // CHAPTER JSON
+    // --------------------------------------------------------
+
+    const isChapter =
+      /\/data\/part[12]\/\d{4}\.json$/
+        .test(
+          url.pathname
+        );
+
+
+    if (
+      isChapter
+    ) {
+
+      event.respondWith(
+
+        caches
+          .open(
+            CHAPTER_CACHE
+          )
+
+          .then(
+            async cache => {
+
+              const cached =
+                await cache.match(
+                  event.request
+                );
+
+
+              if (
+                cached
+              ) {
+
+                return cached;
+
+              }
+
+
+              const response =
+                await fetch(
+                  event.request
+                );
+
+
+              if (
+                response.ok
+              ) {
+
+                cache.put(
+                  event.request,
+                  response.clone()
+                );
+
+              }
+
+
+              return response;
+
+            }
+          )
+
+      );
+
+
+      return;
+
+    }
+
+
+    // --------------------------------------------------------
+    // APP SHELL
+    // --------------------------------------------------------
+
+    event.respondWith(
+
+      caches
+        .match(
+          event.request
+        )
+
+        .then(
+          cached => {
+
+            return (
+              cached
+              ||
+              fetch(
+                event.request
+              )
+            );
+
+          }
+        )
+
+    );
+
+  }
+);
