@@ -1,0 +1,110 @@
+name: Build TOC and Deploy Pages
+
+on:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Generate chapter TOC
+        shell: python
+        run: |
+          import json
+          from pathlib import Path
+
+          data_dir = Path("data")
+
+
+          def build_toc(part):
+
+              folder = data_dir / part
+
+              files = sorted(
+                  folder.glob("*.json"),
+                  key=lambda p: int(p.stem)
+              )
+
+              toc = []
+
+              for path in files:
+
+                  data = json.loads(
+                      path.read_text(
+                          encoding="utf-8"
+                      )
+                  )
+
+                  toc.append({
+                      "chapter": data["chapter"],
+                      "title": data["title"],
+                  })
+
+              output = (
+                  data_dir
+                  / f"toc-{part}.json"
+              )
+
+              output.write_text(
+                  json.dumps(
+                      toc,
+                      ensure_ascii=False,
+                      separators=(",", ":")
+                  ),
+                  encoding="utf-8"
+              )
+
+              print(
+                  f"{part}: {len(toc)} chapters"
+              )
+
+
+          build_toc("part1")
+          build_toc("part2")
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: "."
+
+  deploy:
+    needs: build
+
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
