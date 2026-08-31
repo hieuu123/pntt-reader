@@ -207,4 +207,11 @@ label select {
   #themeBtn {
     padding:8px 10px;
   }
+
+  .chapter-field > label {
+    display:block;
+    margin-bottom:6px;
+    font-size:12px;
+    color:var(--muted);
+  }
 }

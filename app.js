@@ -158,7 +158,15 @@ async function loadChapter() {
 }
 
 function go(chapter) {
-  S.chapter = clamp(chapter);
+  const n = parseInt(chapter, 10);
+
+  if (!Number.isFinite(n)) return;
+
+  S.chapter = clamp(n);
+
+  $("chapterInput").value = S.chapter;
+  $("chapterSelect").value = S.chapter;
+
   window.scrollTo(0, 0);
   loadChapter();
 }
@@ -283,11 +291,18 @@ async function init() {
   $("chapterSelect").onchange =
     e => go(e.target.value);
 
-  $("goBtn").onclick =
-    () => go($("chapterInput").value);
+  const chapterInput = $("chapterInput");
 
-  $("chapterInput").onkeydown =
-    e => e.key === "Enter" && go(e.target.value);
+  $("goBtn").addEventListener("click", () => {
+    go(chapterInput.value);
+  });
+
+  chapterInput.addEventListener("keydown", e => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      go(chapterInput.value);
+    }
+  });
 
   ["prevBtn", "prevBtnBottom"].forEach(
     id => $(id).onclick = () => go(S.chapter - 1)
